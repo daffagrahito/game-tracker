@@ -224,14 +224,14 @@ child: InkWell(
 ```
 Jalankan lagi `flutter run` sehingga akan bisa menge*click* tombol yang telah kita buat sebelumnya.
 
-## Apa perbedaan utama antara *stateless* dan *stateful* *widget* dalam konteks pengembangan aplikasi Flutter?
+## Apa perbedaan utama antara *stateless* dan *stateful* *widget* dalam konteks pengembangan aplikasi Flutter?📱
 Dalam pengembangan aplikasi Flutter, perbedaan utama antara *Stateless* dan *Stateful widget* adalah:
 
 - *Stateless Widget*: Widget ini tidak memiliki state, artinya ia tidak dapat berubah sepanjang lifecycle-nya. Jika kita perlu mengubah tampilan, kita harus menghancurkan widget dan menggantinya dengan yang baru. Stateless widget dapat digunakan untuk membuat bagian-bagian statis dari tampilan aplikasi, seperti teks atau ikon.
 
 - *Stateful Widget*: Widget ini memiliki state yang dapat berubah sepanjang lifecycle-nya sehingga widget bisa berubah saat *user* berinteraksi dengan widget tersebut misalnya. Ini berarti bahwa kita dapat memperbarui tampilan widget tanpa harus menghancurkannya dan membuat yang baru. Ini dapat digunakan ketika perlu memperbarui tampilan aplikasi berdasarkan data yang berubah atau respons pengguna.
 
-## Sebutkan seluruh widget yang kamu gunakan untuk menyelesaikan tugas ini dan jelaskan fungsinya masing-masing
+## Sebutkan seluruh widget yang kamu gunakan untuk menyelesaikan tugas ini dan jelaskan fungsinya masing-masing❗
 Pada flutter, hampir semuanya terdefinisi sebagai widget. Pada tugas ini widget yang dipakai ada banyak, yaitu:
 1. `Scaffold`: Widget ini menyediakan struktur visual dasar untuk aplikasi Material Design. Ini mencakup navigasi dan tampilan konten seperti `AppBar`, `Drawer`, dan `SnackBar`.
 
@@ -264,3 +264,7 @@ Pada flutter, hampir semuanya terdefinisi sebagai widget. Pada tugas ini widget 
 15. `MyHomePage`: Ini adalah widget yang ditampilkan sebagai halaman utama dalam aplikasi. Widget ini tidak didefinisikan dalam potongan kode yang Anda berikan, tetapi biasanya merupakan StatefulWidget atau StatelessWidget yang berisi struktur dan konten halaman utama aplikasi.
 
 16. `ThemeData`: Meskipun bukan widget, `ThemeData` digunakan untuk mengkonfigurasi tampilan aplikasi, seperti warna, font, dan lainnya. Ini digunakan dalam `MaterialApp` untuk menentukan tema aplikasi.
+
+## Screenshot App
+
+![Screenshot App Game Tracker](https://cdn.discordapp.com/attachments/1152952874037428306/1171026480021635105/image.png?ex=655b2e65&is=6548b965&hm=6d0d222a4d3f3239b8fd5c04720a7214287653ba6a646da324282cd1f6e3c429&)
