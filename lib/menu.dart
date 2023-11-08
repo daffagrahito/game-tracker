@@ -53,17 +53,19 @@ class MyHomePage extends StatelessWidget {
   }
 }
 
+// TERDAPAT IMPLEMENTASI BONUS: MENENTUKAN WARNA UNTUK TOMBOL
 class ItemCollections {
   final String name;
   final IconData icon;
+  final MaterialColor color;
 
-  ItemCollections(this.name, this.icon);
+  ItemCollections(this.name, this.icon, this.color); // Constructor
 }
 
 final List<ItemCollections> items = [
-    ItemCollections("Lihat Item", Icons.checklist),
-    ItemCollections("Tambah Item", Icons.note_add_outlined),
-    ItemCollections("Logout", Icons.logout),
+    ItemCollections("Lihat Item", Icons.checklist, Colors.blue),
+    ItemCollections("Tambah Item", Icons.note_add_outlined, Colors.green),
+    ItemCollections("Logout", Icons.logout, Colors.red),
 ];
 
 class ItemCard extends StatelessWidget {
@@ -73,21 +75,8 @@ class ItemCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    Color backgroundColor;
-
-    // IMPLEMENTASI BONUS
-    // Menentukan warna latar belakang berdasarkan item
-    if (item.name == "Lihat Item") {
-      backgroundColor = Colors.blue;
-    } else if (item.name == "Tambah Item") {
-      backgroundColor = Colors.green;
-    } else if (item.name == "Logout") {
-      backgroundColor = Colors.red;
-    } else {
-      backgroundColor = Colors.indigo;
-    }
     return Material(
-      color: backgroundColor,
+      color: item.color,
       child: InkWell(
         // Area responsive terhadap sentuhan
         onTap: () {

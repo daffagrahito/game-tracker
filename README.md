@@ -81,20 +81,22 @@ class MyHomePage extends StatelessWidget {
     }
 }
 ```
-Setelah itu kita tambahkan terlebih dahulu *text* dan *card* pada `menu.dart` dengan mendefinisikan *class-class*nya dan tipe-tipenya pada list seperti yang terlihat pada kode dibawah ini:
+Setelah itu kita tambahkan terlebih dahulu *text* dan *card* pada `menu.dart` dengan mendefinisikan *class-class*nya beserta atribut-atributnya pada list seperti yang terlihat pada kode dibawah ini:
 ```dart
 ...
+// TERDAPAT IMPLEMENTASI BONUS: MENENTUKAN WARNA UNTUK TOMBOL DENGAN DEFINE ATRIBUT BARU
 class ItemCollections {
   final String name;
   final IconData icon;
+  final MaterialColor color;
 
-  ItemCollections(this.name, this.icon);
+  ItemCollections(this.name, this.icon, this.color); // Constructor
 }
 
 final List<ItemCollections> items = [
-    ItemCollections("Lihat Item", Icons.checklist),
-    ItemCollections("Tambah Item", Icons.note_add_outlined),
-    ItemCollections("Logout", Icons.logout),
+    ItemCollections("Lihat Item", Icons.checklist, Colors.blue),
+    ItemCollections("Tambah Item", Icons.note_add_outlined, Colors.green),
+    ItemCollections("Logout", Icons.logout, Colors.red),
 ];
 ```
 Baru setelah ini kita tambahkan isi untuk `Scaffold`nya seperti `AppBar`, body utama menu, dan pengaturan `GridView.
@@ -160,21 +162,8 @@ class ItemCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    Color backgroundColor;
-
-    // IMPLEMENTASI BONUS
-    // Menentukan warna latar belakang berdasarkan item
-    if (item.name == "Lihat Item") {
-      backgroundColor = Colors.blue;
-    } else if (item.name == "Tambah Item") {
-      backgroundColor = Colors.green;
-    } else if (item.name == "Logout") {
-      backgroundColor = Colors.red;
-    } else {
-      backgroundColor = Colors.indigo;
-    }
     return Material(
-      color: backgroundColor,
+      color: item.color,
       child: InkWell(
         ...
         child: Container(
@@ -265,6 +254,6 @@ Pada flutter, hampir semuanya terdefinisi sebagai widget. Pada tugas ini widget 
 
 16. `ThemeData`: Meskipun bukan widget, `ThemeData` digunakan untuk mengkonfigurasi tampilan aplikasi, seperti warna, font, dan lainnya. Ini digunakan dalam `MaterialApp` untuk menentukan tema aplikasi.
 
-## Screenshot App
+## Screenshot App 📷
 
 ![Screenshot App Game Tracker](https://cdn.discordapp.com/attachments/1152952874037428306/1171026480021635105/image.png?ex=655b2e65&is=6548b965&hm=6d0d222a4d3f3239b8fd5c04720a7214287653ba6a646da324282cd1f6e3c429&)
