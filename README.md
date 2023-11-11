@@ -3,10 +3,20 @@
 > The Game Tracker App is a Flutter-based mobile application that allows users to manage and track their game collections. With this app, you can easily add, view, and organize your video games.
 <hr>
 
-### Tugas 7 - Pemrograman Berbasis Platform
-
 `Muhammad Daffa Grahito Triharsanto - 2206820075 - PBP A`
+
+## Tugas 8: Flutter Navigation, Layouts, Forms, and Input Elements
+
+
+## Implementasi Checklist ✅
+
+<br>
 <hr>
+<details>
+
+<summary> <b> Tugas 7 </b> </summary>
+
+### Tugas 7: Elemen Dasar Flutter
 
 ## Implementasi Checklist ✅
 - ### Membuat sebuah program Flutter baru dengan tema *inventory* ✔️
@@ -257,3 +267,4 @@ Pada flutter, hampir semuanya terdefinisi sebagai widget. Pada tugas ini widget 
 ## Screenshot App 📷
 
 ![Screenshot App Game Tracker](https://cdn.discordapp.com/attachments/1152952874037428306/1171026480021635105/image.png?ex=655b2e65&is=6548b965&hm=6d0d222a4d3f3239b8fd5c04720a7214287653ba6a646da324282cd1f6e3c429&)
+</details>
