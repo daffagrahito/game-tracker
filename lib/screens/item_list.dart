@@ -12,8 +12,7 @@ class Item {
 }
   
 List<Item> listItems = [
-  Item("Clash of Clans", 69, "Supercell"),
-  Item("Clash Royale", 420, "HEHEHEHA"),
+
 ];
 
 class ItemListPage extends StatelessWidget {

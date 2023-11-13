@@ -117,7 +117,7 @@ class _GameDataFormPageState extends State<GameDataFormPage> {
                     ),
                     onPressed: () {
                       if (_formKey.currentState!.validate()) {
-                        listItems.add(Item(_name, _playtime, _description));
+                        listItems.add(Item(_name, _playtime, _description));  // IMPLEMENTASI BONUS menambahkan data dari form menjadi Object Item dan dimasukkan ke List
                         showDialog(
                           context: context,
                           builder: (context) {

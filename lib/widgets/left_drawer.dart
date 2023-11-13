@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:game_tracker/screens/item_list.dart';
+import 'package:game_tracker/screens/item_list.dart'; // IMPLEMENTASI BONUS
 import 'package:game_tracker/screens/menu.dart';
 import 'package:game_tracker/screens/gamedata_form.dart';
 
@@ -53,7 +53,7 @@ class LeftDrawer extends StatelessWidget {
           ListTile(
             leading: const Icon(Icons.note_add_outlined),
             title: const Text('Tambah Item'),
-            // Bagian redirection ke ShopFormPage
+            // Bagian redirection ke GameDataFormPage
             onTap: () {
               Navigator.push(
                 context,
@@ -61,10 +61,11 @@ class LeftDrawer extends StatelessWidget {
               );
             },
           ),
+          // List Tile untuk IMPLEMENTASI BONUS yaitu page baru Lihat Item
           ListTile(
             leading: const Icon(Icons.note_add_outlined),
             title: const Text('Lihat Item'),
-            // Bagian redirection ke ShopFormPage
+            // Bagian redirection ke ItemListPage
             onTap: () {
               Navigator.push(
                 context,
