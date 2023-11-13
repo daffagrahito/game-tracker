@@ -402,7 +402,7 @@ Akan kita tata kembali struktur kode kita. Pertama kita buat file `dart` baru be
 
 ![Gambar struktur kode](https://cdn.discordapp.com/attachments/1152952874037428306/1173527586786267156/image.png?ex=656447bb&is=6551d2bb&hm=96a3724f9f6e65dfc6d9ba47450e28ad5e6dea106234e396c8ddb528b9227a12&)
 
-- ### Perbedaan antara `Navigator.push()` dan `Navigator.pushReplacement()` ❔
+## Perbedaan antara `Navigator.push()` dan `Navigator.pushReplacement()` ❔
 `Navigator.push()` dan `Navigator.pushReplacement() `adalah dua metode dalam Flutter yang digunakan untuk navigasi antar halaman.
 
 `Navigator.push()`: Metode ini digunakan untuk menavigasi ke halaman baru dan menambahkannya ke tumpukan halaman (stack). Ketika pengguna menekan tombol kembali, mereka akan kembali ke halaman sebelumnya dalam tumpukan.
@@ -425,7 +425,7 @@ Navigator.pushReplacement(
 
 Dalam contoh di atas, `SecondPage()` adalah halaman baru yang ingin dinavigasi. Kita perlu mengganti `SecondPage()` dengan halaman tujuan.
 
-- ### Layout Widget pada Flutter dan penggunaannya 🚩
+## Layout Widget pada Flutter dan penggunaannya 🚩
 **SingleChildLayoutWidget** 
 
 SingleChildLayoutWidget adalah widget yang mengatur satu anak widget tunggal dalam tata letaknya. Widget dalam kelompok ini sering digunakan ketika kita ingin mengatur ukuran atau posisi anak widget secara kustom.
@@ -458,10 +458,10 @@ MultiChildLayoutWidget adalah widget yang mengatur beberapa anak widget dalam ta
 | `Flex` dan `Expanded`       | Menggunakan fleksibilitas dalam tata letak, memungkinkan untuk memberikan bobot (flex) pada widget anak.   | Menggunakan `Flex` dan `Expanded` untuk mengatur tata letak dalam `Row` atau `Column`.              |
 | `GridView` dan `ListView`   | Menyusun widget anak dalam bentuk grid atau daftar.       
 
-- ### Elemen *input form* yang dipakai pada tugas ini 📃
+## Elemen *input form* yang dipakai pada tugas ini 📃
 Elemen input yang dipakai pada form yang ada di tugas ini hanya `TextFormField`. `TextFormField` dipakai untuk Nama game, Playtime, dan Deskripsi. Semua elemen input ini digunakan karena mereka memberikan cara yang mudah dan efektif bagi pengguna untuk memasukkan data. Selain itu, mereka semua dilengkapi dengan *validator* untuk memastikan bahwa pengguna memasukkan data yang valid dan tidak meninggalkan bidang tersebut kosong.
 
-- ### Penerapan clean architecture pada aplikasi Flutter? 📘
+## Penerapan clean architecture pada aplikasi Flutter? 📘
 Clean Architecture adalah suatu konsep arsitektur perangkat lunak yang bertujuan untuk memisahkan tanggung jawab dan ketergantungan antar komponen agar aplikasi lebih bersih, terstruktur, dan mudah diuji. Penerapan Clean Architecture pada aplikasi Flutter melibatkan beberapa lapisan utama:
 
 1. **Lapisan Presentasi (Presentation Layer):**
