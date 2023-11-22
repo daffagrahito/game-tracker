@@ -10,7 +10,7 @@ class MyHomePage extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: const Text(
-          'Game Tracker',
+          'Inventory Master',
         ),
         backgroundColor: Colors.indigoAccent,
         foregroundColor: Colors.white,
@@ -27,7 +27,7 @@ class MyHomePage extends StatelessWidget {
                 padding: EdgeInsets.only(top: 10.0, bottom: 10.0),
                 // Widget Text untuk menampilkan tulisan dengan alignment center dan style yang sesuai
                 child: Text(
-                  'Track Your Game Collections', // Text penanda
+                  'Manage your inventories data in this inventory app', // Text penanda
                   textAlign: TextAlign.center,
                   style: TextStyle(
                     fontSize: 30,

@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:game_tracker/screens/item_list.dart'; // IMPLEMENTASI BONUS
+import 'package:game_tracker/screens/list_item.dart';
 import 'package:game_tracker/screens/menu.dart';
 import 'package:game_tracker/screens/gamedata_form.dart';
 
@@ -18,7 +18,7 @@ class LeftDrawer extends StatelessWidget {
             child: Column(
               children: [
                 Text(
-                  'Game Tracker',
+                  'Inventory Master',
                   textAlign: TextAlign.center,
                   style: TextStyle(
                     fontSize: 30,
@@ -27,7 +27,7 @@ class LeftDrawer extends StatelessWidget {
                   ),
                 ),
                 Padding(padding: EdgeInsets.all(10)),
-                Text("Track Your Game Collections",
+                Text("Manage your inventories data in an inventory",
                     textAlign: TextAlign.center, // Center alignment
                     style: TextStyle(
                       fontSize: 15,
@@ -61,15 +61,14 @@ class LeftDrawer extends StatelessWidget {
               );
             },
           ),
-          // List Tile untuk IMPLEMENTASI BONUS yaitu page baru Lihat Item
           ListTile(
-            leading: const Icon(Icons.note_add_outlined),
+            leading: const Icon(Icons.checklist),
             title: const Text('Lihat Item'),
             // Bagian redirection ke ItemListPage
             onTap: () {
               Navigator.push(
                 context,
-                MaterialPageRoute(builder: (context) => ItemListPage()),
+                MaterialPageRoute(builder: (context) => const ItemPage()),
               );
             },
           ),

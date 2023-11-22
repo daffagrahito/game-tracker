@@ -1,3 +1,638 @@
+# Inventory Master Mobile
+
+> Mobile version of Inventory Master Django Web app
+
+`Muhammad Daffa Grahito Triharsanto - 2206820075 - PBP A`
+
+## Tugas 9: Integrasi Layanan Web Django dengan Aplikasi Flutter
+
+## Implementasi Checklist ✅
+- ### Memastikan deployment proyek tugas Django kamu telah berjalan dengan baik. ✔️
+![Deployment tugas Django](https://cdn.discordapp.com/attachments/1152952874037428306/1176697426103517294/image.png?ex=656fcfe0&is=655d5ae0&hm=9a6c46fc548585b894763dad32fee5a44036df0a510aa28e82daef4193e2c443&)
+
+- ### Mengintegrasikan sistem autentikasi Django dengan proyek tugas Flutter. ✔️
+Pertama, buat `django-app` dengan menjalankan `python manage.py startapp authentication`. 
+
+Setelah itu tambahkan `django-cors-headers` ke dalam requirements.txt dan jalankan `pip install requirements.txt`. 
+
+Pastikan untuk menambahkan `authentication` dan `corsheaders` ke dalam `INSTALLED_APPS` di `settings.py` direktori *project*. 
+
+Tambahkan juga `corsheaders.middleware.CorsMiddleware` ke dalam `MIDDLEWARE`. 
+
+Setelah itu tambahkan variable-variable berikut ini pada `settings.py`:
+```py
+CORS_ALLOW_ALL_ORIGINS = True
+CORS_ALLOW_CREDENTIALS = True
+CSRF_COOKIE_SECURE = True
+SESSION_COOKIE_SECURE = True
+CSRF_COOKIE_SAMESITE = 'None'
+SESSION_COOKIE_SAMESITE = 'None'
+```
+
+Setelah itu menjalankan command berikut di terminal pada direktori flutter app `game_tracker`
+```
+flutter pub add provider
+flutter pub add pbp_django_auth
+```
+
+Jika sudah, pada `lib/main.dart` akan diubah `class MyApp` menjadi seperti ini
+```dart
+... // Sesuaikan importnya dan tambahkan kode dibawah ini
+import 'package:pbp_django_auth/pbp_django_auth.dart';
+import 'package:provider/provider.dart';
+...
+class MyApp extends StatelessWidget {
+  const MyApp({super.key});
+
+  // This widget is the root of your application.
+  @override
+  Widget build(BuildContext context) {
+    return Provider(
+      create: (_) {
+          CookieRequest request = CookieRequest();
+          return request;
+      },
+      child: MaterialApp(
+        title: 'Flutter App',
+        theme: ThemeData(
+          colorScheme: ColorScheme.fromSwatch(primarySwatch: Colors.indigo),
+          useMaterial3: true,
+        ),
+        home: const LoginPage(),
+      ),
+    );
+  }
+}
+```
+
+- ### Membuat halaman login pada proyek tugas Flutter. ✔️
+Buat sebuah views function pada `authentication/views.py` dan isi dengan ini:
+```py
+from django.shortcuts import render
+from django.contrib.auth import authenticate, login as auth_login
+from django.http import JsonResponse
+from django.views.decorators.csrf import csrf_exempt
+
+@csrf_exempt
+def login(request):
+    username = request.POST['username']
+    password = request.POST['password']
+    user = authenticate(username=username, password=password)
+    if user is not None:
+        if user.is_active:
+            auth_login(request, user)
+            # Status login sukses.
+            return JsonResponse({
+                "username": user.username,
+                "status": True,
+                "message": "Login sukses!"
+                "id": user.id,  # IMPLEMENTASI BONUS: Untuk filtering item di Flutter app nya
+            }, status=200)
+        else:
+            return JsonResponse({
+                "status": False,
+                "message": "Login gagal, akun dinonaktifkan."
+            }, status=401)
+
+    else:
+        return JsonResponse({
+            "status": False,
+            "message": "Login gagal, periksa kembali email atau kata sandi."
+        }, status=401)
+```
+Setelah itu, buat file `urls.py` pada direktori app `authentication` dan isi dengan ini:
+```py
+from django.urls import path
+from authentication.views import login
+
+app_name = 'authentication'
+
+urlpatterns = [
+    path('login/', login, name='login'),
+]
+```
+Tambahkan juga path ini `path('auth/', include('authentication.urls')),` pada `urls.py` direktori project djangonya.
+
+Setelah itu buat sebuah file baru pada folder `screens` dengan nama `login.dart` dan isi dengan kode ini:
+```dart
+// ignore_for_file: use_build_context_synchronously
+
+import 'package:game_tracker/screens/menu.dart';
+import 'package:flutter/material.dart';
+import 'package:game_tracker/screens/register.dart';
+import 'package:pbp_django_auth/pbp_django_auth.dart';
+import 'package:provider/provider.dart';
+
+void main() {
+    runApp(const LoginApp());
+}
+
+class LoginApp extends StatelessWidget {
+const LoginApp({super.key});
+
+@override
+Widget build(BuildContext context) {
+    return MaterialApp(
+        title: 'Login',
+        theme: ThemeData(
+            primarySwatch: Colors.indigo,
+    ),
+    home: const LoginPage(),
+    );
+    }
+}
+
+class LoginPage extends StatefulWidget {
+    const LoginPage({super.key});
+
+    @override
+    // ignore: library_private_types_in_public_api
+    _LoginPageState createState() => _LoginPageState();
+}
+
+User? loggedInUser;
+
+class User {
+  final String username;
+  final int id;
+
+  User(this.username, this.id);
+}
+
+class _LoginPageState extends State<LoginPage> {
+    final TextEditingController _usernameController = TextEditingController();
+    final TextEditingController _passwordController = TextEditingController();
+
+    @override
+    Widget build(BuildContext context) {
+        final request = context.watch<CookieRequest>();
+        return Scaffold(
+            appBar: AppBar(
+                title: const Text('Login'),
+                backgroundColor: Colors.indigoAccent,
+                foregroundColor: Colors.white,
+            ),
+            body: Container(
+                padding: const EdgeInsets.all(16.0),
+                child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                        TextField(
+                            controller: _usernameController,
+                            decoration: const InputDecoration(
+                                labelText: 'Username',
+                            ),
+                        ),
+                        const SizedBox(height: 12.0),
+                        TextField(
+                            controller: _passwordController,
+                            decoration: const InputDecoration(
+                                labelText: 'Password',
+                            ),
+                            obscureText: true,
+                        ),
+                        const SizedBox(height: 24.0),
+                        ElevatedButton(
+                            onPressed: () async {
+                                String username = _usernameController.text;
+                                String password = _passwordController.text;
+
+                                // Cek kredensial
+                                final response = await request.login("http://muhammad-daffa23-tugas.pbp.cs.ui.ac.id/auth/login/", {
+                                // final response = await request.login("http://localhost:8000/auth/login/", {
+                                'username': username,
+                                'password': password,
+                                });
+                    
+                                if (request.loggedIn) {
+                                    String message = response['message'];
+                                    String uname = response['username'];
+                                    int id = response['id'];
+                                    loggedInUser = User(uname, id);
+                                    Navigator.pushReplacement(
+                                        context,
+                                        MaterialPageRoute(builder: (context) => const MyHomePage()),
+                                    );
+                                    ScaffoldMessenger.of(context)
+                                        ..hideCurrentSnackBar()
+                                        ..showSnackBar(
+                                            SnackBar(content: Text("$message Selamat datang, $uname.")));
+                                    } else {
+                                    showDialog(
+                                        context: context,
+                                        builder: (context) => AlertDialog(
+                                            title: const Text('Login Gagal'),
+                                            content:
+                                                Text(response['message']),
+                                            actions: [
+                                                TextButton(
+                                                    child: const Text('OK'),
+                                                    onPressed: () {
+                                                        Navigator.pop(context);
+                                                    },
+                                                ),
+                                            ],
+                                        ),
+                                    );
+                                }
+                            },
+                            child: const Text('Login'),
+                        ),
+                        const SizedBox(height: 12.0),
+                        ElevatedButton(
+                          onPressed: () {
+                            // Navigate ke Register Page
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(builder: (context) => const RegisterPage()),
+                            );
+                          },
+                          child: const Text('Register'),),
+                    ],
+                ),
+            ),
+        );
+    }
+}
+```
+Setelah itu, pada file `main.dart`, pada Widget `MaterialApp(...)`, ubah `home: const MyHomePage()` menjadi `home: const LoginPage()` dan jalankan `flutter run` untuk melihat perubahannya
+
+- ### Membuat model kustom sesuai dengan proyek aplikasi Django. ✔️
+Untuk membuat model kustom sesuai project aplikasi Django, kita bisa menggunakan [Quicktype](http://app.quicktype.io/) yaitu dengan mengambil mengakses route `/json` pada Django web app kita. Ubah setup name menjadi `Item`, source type menjadi `JSON`, dan language menjadi `Dart` pada [Quicktype](http://app.quicktype.io/). Sehingga hasil yang didapat adalah seperti ini:
+```dart
+// To parse this JSON data, do
+//
+//     final item = itemFromJson(jsonString);
+
+import 'dart:convert';
+
+List<Item> itemFromJson(String str) => List<Item>.from(json.decode(str).map((x) => Item.fromJson(x)));
+
+String itemToJson(List<Item> data) => json.encode(List<dynamic>.from(data.map((x) => x.toJson())));
+
+class Item {
+    String model;
+    int pk;
+    Fields fields;
+
+    Item({
+        required this.model,
+        required this.pk,
+        required this.fields,
+    });
+
+    factory Item.fromJson(Map<String, dynamic> json) => Item(
+        model: json["model"],
+        pk: json["pk"],
+        fields: Fields.fromJson(json["fields"]),
+    );
+
+    Map<String, dynamic> toJson() => {
+        "model": model,
+        "pk": pk,
+        "fields": fields.toJson(),
+    };
+}
+
+class Fields {
+    int user;
+    String name;
+    int amount;
+    String description;
+    DateTime dateAdded;
+    String category;
+
+    Fields({
+        required this.user,
+        required this.name,
+        required this.amount,
+        required this.description,
+        required this.dateAdded,
+        required this.category,
+    });
+
+    factory Fields.fromJson(Map<String, dynamic> json) => Fields(
+        user: json["user"],
+        name: json["name"],
+        amount: json["amount"],
+        description: json["description"],
+        dateAdded: DateTime.parse(json["date_added"]),
+        category: json["category"],
+    );
+
+    Map<String, dynamic> toJson() => {
+        "user": user,
+        "name": name,
+        "amount": amount,
+        "description": description,
+        "date_added": "${dateAdded.year.toString().padLeft(4, '0')}-${dateAdded.month.toString().padLeft(2, '0')}-${dateAdded.day.toString().padLeft(2, '0')}",
+        "category": category,
+    };
+}
+```
+Taruh kode tersebut ke dalam direktori baru di `lib` dengan nama `models` dan buat sebuah file baru bernama `item.dart`.
+
+- ### Membuat halaman yang berisi daftar semua item yang terdapat pada endpoint JSON di Django yang telah kamu deploy. ✔️
+Sebelum itu lakukan `flutter pub add http` pada terminal di direktori flutter app, dan pada `android/app/src/main/AndroidManifest.xml` tambahkan kode ini persis setelah `</application>`
+```xml
+...
+    </application>
+    <!-- Required to fetch data from the Internet. -->
+    <uses-permission android:name="android.permission.INTERNET" />
+...
+```
+
+Setelah itu, buat file baru pada `lib/screens` dengan nama `list_item.dart` dan isi dengan seperti ini:
+```dart
+import 'package:flutter/material.dart';
+import 'package:game_tracker/screens/detail_item.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
+import 'package:game_tracker/models/item.dart';
+import 'package:game_tracker/screens/login.dart';
+import 'package:game_tracker/widgets/left_drawer.dart';
+
+class ItemPage extends StatefulWidget {
+  const ItemPage({super.key});
+  
+  @override
+  State<StatefulWidget> createState() => _ItemPageState();
+}
+
+class _ItemPageState extends State<ItemPage> {
+  Future<List<Item>> fetchItem() async {
+    var url = Uri.parse('https://muhammad-daffa23-tugas.pbp.cs.ui.ac.id/json/');
+    // var url = Uri.parse('http://localhost:8000/json/');
+    var response = await http.get(
+      url,
+      headers: {
+        "Content-Type": "application/json",
+      },
+    );
+
+    // Melakukan decode response menjadi bentuk json
+    var data = jsonDecode(utf8.decode(response.bodyBytes));
+
+    // Melakukan konversi data json menjadi object Item
+    List<Item> list_item = [];
+    for (var d in data) {
+      if (d != null) {
+        Item item = Item.fromJson(d);
+        if (item.fields.user == loggedInUser?.id){
+          list_item.add(item);
+        }
+      }
+    }
+    return list_item;
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+        appBar: AppBar(
+          title: const Text(
+            'Daftar Item',
+            style: TextStyle(color: Colors.white),
+          ),
+          backgroundColor: Colors.indigoAccent,
+          foregroundColor: Colors.white,
+        ),
+        drawer: const LeftDrawer(),
+        body: FutureBuilder(
+            future: fetchItem(),
+            builder: (context, AsyncSnapshot snapshot) {
+              if (snapshot.data == null) {
+                return const Center(child: CircularProgressIndicator());
+              } else {
+                if (!snapshot.hasData) {
+                  return const Column(
+                    children: [
+                      Text(
+                        "Tidak terdapat Item.",
+                        style:
+                            TextStyle(color: Color(0xff59A5D8), fontSize: 20),
+                      ),
+                      SizedBox(height: 8),
+                    ],
+                  );
+                } else {
+                  return ListView.builder(
+                    itemCount: snapshot.data!.length,
+                    itemBuilder: (_, index) => InkWell(
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) =>
+                                ItemDetailPage(item: snapshot.data![index]),
+                          ),
+                        );
+                      },
+                      child: Card(
+                        margin: const EdgeInsets.symmetric(
+                            horizontal: 16, vertical: 12),
+                        child: Padding(
+                          padding: const EdgeInsets.all(20.0),
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.start,
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                "${snapshot.data![index].fields.name}",
+                                style: const TextStyle(
+                                  fontSize: 18.0,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                              const SizedBox(height: 10),
+                              Text(
+                                  "Amount : ${snapshot.data![index].fields.amount}"),
+                              const SizedBox(height: 10),
+                              Text(
+                                  "Description : ${snapshot.data![index].fields.description}")
+                            ],
+                          ),
+                        ),
+                      ),
+                    ),
+                  );
+                }
+              }
+            }));
+  }
+}
+```
+Setelah itu tambahkan `ListTile` pada `widgets/left_drawer.dart` untuk routing ke page `Lihat Item` seperti kode dibawah ini:
+```dart
+// Sesuaikan importnya
+import 'package:game_tracker/screens/list_item.dart';
+...
+ListTile(
+  leading: const Icon(Icons.checklist),
+  title: const Text('Lihat Item'),
+  // Bagian redirection ke ItemListPage
+  onTap: () {
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => const ItemPage()),
+    );
+  },
+),
+...
+```
+Dan juga tambahkan routing Lihat Item pada bagian `onTap: () { }` di file `widgets/item_card.dart` dengan menambahkan ini:
+```dart
+// Sesuaikan importnya
+import 'package:game_tracker/screens/list_item.dart'; // Import ItemList untuk Tombol Lihat Item
+...
+else if (item.name == "Lihat Item") {
+  Navigator.push(context,
+  MaterialPageRoute(builder: (context) => const ItemPage()));
+```
+
+- ###  Membuat halaman detail untuk setiap item yang terdapat pada halaman daftar Item. ✔️
+Sebelumnya, kita dapat mengintegrasikan layanan form flutter dengan layanan django terlebih dahulu dengan membuat views `create_product_flutter` dan juga mengimplementasikan fitur `Logout`. Lebih detailnya bisa dilihat pada source code di github.
+
+Dan juga jika ada `onTap: () {...}` di file ubah menjadi `onTap: () async {...}` supaya berjalan secara asinkronus.
+
+Untuk membuat halaman detail setiap itemnya, buat sebuah file baru pada `screens/` bernama `detail_item.dart` dan isi dengan kode berikut:
+```dart
+import 'package:flutter/material.dart';
+import 'package:game_tracker/models/item.dart';
+import 'package:game_tracker/widgets/left_drawer.dart';
+
+class ItemDetailPage extends StatelessWidget {
+  final Item item;
+
+  const ItemDetailPage({Key? key, required this.item}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('Item Details'),
+        backgroundColor: Colors.indigo,
+        foregroundColor: Colors.white,
+      ),
+      drawer: const LeftDrawer(),
+      body: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              item.fields.name,
+              style: const TextStyle(
+                fontSize: 24.0,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            const SizedBox(height: 10),
+            Text("Amount: ${item.fields.amount}"),
+            const SizedBox(height: 10),
+            Text("Description: ${item.fields.description}"),
+            const SizedBox(height: 10),
+            Text("Date Added: ${item.fields.dateAdded}"),
+            const SizedBox(height: 10),
+            Text("Category: ${item.fields.category}"),
+            const SizedBox(height: 20),
+            ElevatedButton(
+              onPressed: () {
+                Navigator.pop(context); // Navigate back to the item list page
+              },
+              child: const Text('Kembali ke daftar item'),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+```
+
+## Apakah bisa kita melakukan pengambilan data JSON tanpa membuat model terlebih dahulu? 💬
+**Ya bisa**, kita dapat melakukan ini dengan menyimpan data JSON ke dalam struktur data seperti dictionary atau map. Namun, pendekatan ini tidak selalu ideal dan **bukan hal yang lebih baik** dari membuat model sebelum melakukan pengambilan data JSON, karena justru model mempermudah kita dalam melakukan pengambilan data karena dengan model kita dapat memastikan suatu objek memiliki semua nilai atribut pada kelas dibanding dengan dictionary yang bisa saja kita melewatkan suatu atribut.
+
+## Jelaskan fungsi dari `CookieRequest` dan jelaskan mengapa instance `CookieRequest` perlu untuk dibagikan ke semua komponen di aplikasi Flutter? 🍪
+`CookieRequest` adalah salah satu class pada package `pbp_django_auth.dart`.
+
+### Fungsi
+Dilihat dari isi *class*-nya, menurut saya, fungsi dari *class* `CookieRequest` ini yaitu:
+- Menyediakan fungsi untuk inisialisasi sesi, login, dan logout yang memungkinkan aplikasi untuk melacak status login dan sesi pengguna.
+- Cookies berupa informasi sesi tersebut disimpan secara lokal.
+- Melakukan permintaan HTTP dengan metode `GET` dan `POST`.
+
+`CookieRequest` perlu dibagikan ke semua komponen di aplikasi Flutter agar status login atau sesi (cookies) **konsisten**. Jadi, jika status login atau sesi diubah dalam suatu komponen atau aplikasi, maka di komponen atau aplikasi lain akan berubah juga.
+
+## Jelaskan mekanisme pengambilan data dari JSON hingga dapat ditampilkan pada Flutter. 📚
+Berikut adalah mekanisme pengambilan data dari JSON.
+1. **Membuat model kustom**
+Manfaatkan website [Quicktype](http://app.quicktype.io/) untuk membuat data JSON yang didapat dari *endpoint* `/json` pada tugas Django.
+2. **Menambahkan dependensi HTTP**
+Pada proyek Flutter, tambahkan dependensi `http` dan tambahkan kode `<uses-permission android:name="android.permission.INTERNET" />` pada `android/app/src/main/AndroidManifest.xml` untuk memperbolehkan akses internet.
+3. **Fetch Data pada JSON**
+```dart
+...
+Future<List<Item>> fetchItem() async {
+    var url = Uri.parse('https://muhammad-daffa23-tugas.pbp.cs.ui.ac.id/json/');
+    // var url = Uri.parse('http://localhost:8000/json/');
+    var response = await http.get(
+      url,
+      headers: {
+        "Content-Type": "application/json",
+      },
+    );
+
+    // Melakukan decode response menjadi bentuk json
+    var data = jsonDecode(utf8.decode(response.bodyBytes));
+
+    // Melakukan konversi data json menjadi object Item
+    List<Item> list_item = [];
+    for (var d in data) {
+      if (d != null) {
+        Item item = Item.fromJson(d);
+        if (item.fields.user == loggedInUser?.id){
+          list_item.add(item);
+        }
+      }
+    }
+    return list_item;
+  }
+...
+```
+Pada kode tersebut terlihat bahwa ada fetch data `JSON` yang dilakukan dan mengirim `HTTP Request`
+
+## Jelaskan mekanisme autentikasi dari input data akun pada Flutter ke Django hingga selesainya proses autentikasi oleh Django dan tampilnya menu pada Flutter. 🛂
+Mekanisme autentikasi pengguna dijelaskan sebagai berikut.
+1. Pengguna **memasukkan data akun** yaitu `username` dan `password` pada laman `LoginPage`.
+2. Tombol *login* ditekan dan fungsi `login` pada `CookieRequest` terpanggil yang **mengirimkan HTTP *request*** dengan *endpoint* URL proyek Django.
+3. Pada Django, **dilakukan autentikasi** seperti `user = authenticate(username=username, password=password)` pada `views.py` milik `authentication`.
+4. Setelah itu dicek, **apakah `user is not None` dan `user.is_active:`**?
+5. Kembali ke Flutter, jika `request.loggedIn`, **pengguna diarahkan ke `MyHomePage`** dan muncul tampilan selamat datang menggunakan `SnackBar`.
+6. Terdapat filtering data `JSON` yang dilakukan setelah fetch data semua data `JSON` lalu data tersebut di filter berdasarkan user id yang terautentikasi dan dimasukkan ke dalam `list_item` untuk ditampilkan pada page `Lihat Item`.
+
+## Widget yang digunakan pada tugas ini. 📱
+| Widget            | Penjelasan                                                                                                                                                  |
+|-------------------|-------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `Scaffold`        | `Scaffold` adalah kerangka utama yang digunakan untuk mengatur struktur dasar halaman. Ini mengandung `AppBar` dan `body`.                                     |
+| `AppBar`          | `AppBar` adalah bilah atas yang menampilkan judul halaman dan aksi seperti tombol kembali.                                                                   |
+| `Container`       | `Container` digunakan untuk mengelompokkan widget dalam satu area dengan padding. Ini memberikan tampilan yang lebih rapi pada widget di dalamnya.             |
+| `TextField`       | `TextField` adalah input teks yang memungkinkan pengguna memasukkan teks.                                                                                  |
+| `ElevatedButton`  | `ElevatedButton` adalah tombol dengan latar belakang yang terangkat dan reaksi saat ditekan. Digunakan untuk mengaktifkan tindakan seperti "Register" atau "Login". |
+| `Text`            | `Text` digunakan untuk menampilkan teks statis.                                                                                                              |
+| `AlertDialog`     | `AlertDialog` adalah dialog pop-up yang digunakan untuk menampilkan pesan kepada pengguna.                                                                 |
+| `SnackBar`        | `SnackBar` adalah pesan singkat yang muncul di bagian bawah layar dan biasanya digunakan untuk memberikan umpan balik singkat.                             |
+| `BuildContext`    | `BuildContext` digunakan untuk mengakses konteks saat membangun widget, seperti untuk menavigasi antar halaman.                                            |
+| `Navigator`       | `Navigator` digunakan untuk mengelola navigasi antar halaman dalam aplikasi Flutter.                                                                         |
+| `FutureBuilder`       | `FutureBuilder` digunakan untuk membangun UI berdasarkan hasil dari sebuah `Future`. Ini memungkinkan tampilan yang berbeda tergantung pada status Future. |
+| `CircularProgressIndicator` | `CircularProgressIndicator` adalah indikator putar yang digunakan saat data sedang dimuat.                                                       |
+| `ListView.builder`     | `ListView.builder` adalah daftar gulir yang dibangun secara dinamis berdasarkan data.                                                                   |
+| `InkWell`             | `InkWell` digunakan untuk membuat area yang dapat ditekan (tappable).                                                                                    |
+
+<details>
+<br>
+<summary> <b> Tugas 8 </b> </summary>
+
 # Game Tracker
 
 > The Game Tracker App is a Flutter-based mobile application that allows users to manage and track their game collections. With this app, you can easily add, view, and organize your video games.
@@ -478,11 +1113,21 @@ Clean Architecture adalah suatu konsep arsitektur perangkat lunak yang bertujuan
 4. **Lapisan Sumber Eksternal:**
     - **API Clients, Database, dan Eksternal Services**: Komponen ini menyediakan data ke Repositories atau menerima data dari Repositories.
 
+</details>
+
 <br>
 <hr>
 <details>
 
 <summary> <b> Tugas 7 </b> </summary>
+<br>
+
+# Game Tracker
+
+> The Game Tracker App is a Flutter-based mobile application that allows users to manage and track their game collections. With this app, you can easily add, view, and organize your video games.
+<hr>
+
+`Muhammad Daffa Grahito Triharsanto - 2206820075 - PBP A`
 
 ### Tugas 7: Elemen Dasar Flutter
 
