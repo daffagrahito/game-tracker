@@ -629,6 +629,8 @@ Mekanisme autentikasi pengguna dijelaskan sebagai berikut.
 | `ListView.builder`     | `ListView.builder` adalah daftar gulir yang dibangun secara dinamis berdasarkan data.                                                                   |
 | `InkWell`             | `InkWell` digunakan untuk membuat area yang dapat ditekan (tappable).                                                                                    |
 
+<br>
+<hr>
 <details>
 <br>
 <summary> <b> Tugas 8 </b> </summary>
@@ -1115,7 +1117,7 @@ Clean Architecture adalah suatu konsep arsitektur perangkat lunak yang bertujuan
 
 </details>
 
-<br>
+
 <hr>
 <details>
 
